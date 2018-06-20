@@ -94,8 +94,13 @@ class ClientHandler
                             Utils.writeToSocket(myClientSocket, "Failed to remove car, are you sure this is the correct license number?");
                     } else
                     if(clientCommand.equalsIgnoreCase("3"))
+                    {
+                        FileOutputStream fos = new FileOutputStream("garage");
+                        ObjectOutputStream oos = new ObjectOutputStream(fos);
+                        oos.writeObject(garage);
+                        oos.flush();
                         Utils.sendGarage(myClientSocket, garage.toByteArray());
-                    else
+                    } else
                     if(clientCommand.equals("4"))
                     {
                         String garageContent = garage.printGarage();

